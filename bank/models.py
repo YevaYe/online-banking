@@ -10,7 +10,7 @@ class User(AbstractUser):
 
     birthday = models.DateField(blank=True, null=True)
     date_of_joining = models.DateField(auto_now_add=True)  # під час створення юзера
-    country = models.CharField(max_length=50)
+    country = models.CharField(max_length=50) # функція вибарти із запропонованого поки вводиш дані
     user_type = models.CharField(max_length=12, choices=USER_TYPE_CHOICES, default="regular")
     service_category = models.ForeignKey("Category", on_delete=models.SET_NULL, blank=True, null=True)
 
@@ -52,3 +52,9 @@ class Category(models.Model):
 
     name = models.CharField(max_length=100)
     type_of_category = models.CharField(max_length=15, choices=CATEGORY_TYPE_CHOICES)
+
+
+class Country(models.Model):
+    name = models.CharField(max_length=100)
+    national_currency_name = models.CharField(max_length=50)
+    national_currency_symbol = models.CharField(max_length=1)
