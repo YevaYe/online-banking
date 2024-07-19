@@ -29,9 +29,10 @@ class User(AbstractUser):
         verbose_name="user permissions",
     )
 
+
 class Transaction(models.Model):
-    account_from = models.ForeignKey(User, on_delete=models.CASCADE, related_name="account_from")
-    account_to = models.ForeignKey(User, on_delete=models.CASCADE, related_name="account_to")
+    account_from = models.ForeignKey("Account", on_delete=models.CASCADE, related_name="account_from")
+    account_to = models.ForeignKey("Account", on_delete=models.CASCADE, related_name="account_to")
     amount = models.DecimalField(max_digits=10, decimal_places=2)
     date = models.DateField()
     category = models.ForeignKey("Category", on_delete=models.CASCADE, related_name="category")
@@ -50,4 +51,4 @@ class Category(models.Model):
     )
 
     name = models.CharField(max_length=100)
-    type_of_account = models.CharField(max_length=15, choices=CATEGORY_TYPE_CHOICES)
+    type_of_category = models.CharField(max_length=15, choices=CATEGORY_TYPE_CHOICES)
