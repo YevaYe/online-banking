@@ -10,7 +10,8 @@ class User(AbstractUser):
 
     birthday = models.DateField(blank=True, null=True)
     date_of_joining = models.DateField(auto_now_add=True)  # під час створення юзера
-    country = models.CharField(max_length=50) # функція вибарти із запропонованого поки вводиш дані
+    country = models.ForeignKey("Country", on_delete=models.SET_NULL)
+    # функція вибрати із запропонованого поки вводиш дані
     user_type = models.CharField(max_length=12, choices=USER_TYPE_CHOICES, default="regular")
     service_category = models.ForeignKey("Category", on_delete=models.SET_NULL, blank=True, null=True)
 
