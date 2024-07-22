@@ -1,7 +1,16 @@
+import random
+
 from django.contrib.auth.models import AbstractUser
 from django.core.exceptions import ValidationError
 from django.core.validators import MinValueValidator, MaxValueValidator
 from django.db import models
+
+
+def generate_unique_account_number():
+    while True:
+        number = random.randint(1111111111111111, 9999999999999999)
+        if not Account.objects.filter(number=number).exists():
+            return number
 
 
 class User(AbstractUser):
@@ -65,6 +74,11 @@ class Account(models.Model):
     balance = models.DecimalField(max_digits=10, decimal_places=2)
     created_at = models.DateTimeField(auto_now_add=True)
     account_category = models.ForeignKey("Category", on_delete=models.SET_NULL, default="Transfer", null=True)
+
+    def save(self, *args, **kwargs):
+        if not self.number:
+            self.number = generate_unique_account_number()
+        super(Account, self).save(*args, **kwargs)
 
 
 class Category(models.Model):
