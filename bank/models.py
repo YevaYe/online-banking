@@ -64,6 +64,9 @@ class Transaction(models.Model):
         if self.amount <= 0:
             raise ValidationError("Amount must be greater than zero")
 
+    class Meta:
+        ordering = ["-date"]
+
 
 class Account(models.Model):
     number = models.IntegerField(
