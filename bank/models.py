@@ -8,7 +8,7 @@ from django.db import models
 
 def generate_unique_account_number():
     while True:
-        number = random.randint(1111111111111111, 9999999999999999)
+        number = random.randint(1111_1111_1111_1111, 9999_9999_9999_9999)
         if not Account.objects.filter(number=number).exists():
             return number
 
@@ -100,4 +100,4 @@ class Country(models.Model):
     national_currency_symbol = models.CharField(max_length=1)
 
     def __str__(self):
-        return f"{self.name}"
+        return f"{self.name} ({self.national_currency_name, self.national_currency_symbol})"
