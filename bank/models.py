@@ -13,7 +13,7 @@ def generate_unique_account_number():
             return number
 
 
-class User(AbstractUser):
+class Client(AbstractUser):
     USER_TYPE_CHOICES = (
         ("regular", "Regular User"),
         ("entrepreneur", "Entrepreneur"),
@@ -70,15 +70,20 @@ class Account(models.Model):
         unique=True,
         validators=[MinValueValidator(1111_1111_1111_1111), MaxValueValidator(9999_9999_9999_9999)]
     )
-    user = models.OneToOneField(User, on_delete=models.CASCADE, related_name="account")
-    balance = models.DecimalField(max_digits=10, decimal_places=2)
+    user = models.OneToOneField(Client, on_delete=models.CASCADE, related_name="account")
+    balance = models.DecimalField(max_digits=10, decimal_places=2, validators=[MinValueValidator(0)])
     created_at = models.DateTimeField(auto_now_add=True)
-    account_category = models.ForeignKey("Category", on_delete=models.SET_NULL, default="Transfer", null=True)
+    account_category = models.ForeignKey("Category", on_delete=models.SET_NULL, default="Transfer", null=True, blank=True)
 
     def save(self, *args, **kwargs):
         if not self.number:
             self.number = generate_unique_account_number()
+        if self.user.user_type != "entrepreneur" and self.account_category is not None:
+            raise ValidationError("Only entrepreneurs can have account categories.")
         super(Account, self).save(*args, **kwargs)
+
+    def __str__(self):
+        return f"{self.number} (owner: {self.user.username})"
 
 
 class Category(models.Model):
@@ -100,4 +105,4 @@ class Country(models.Model):
     national_currency_symbol = models.CharField(max_length=1)
 
     def __str__(self):
-        return f"{self.name} ({self.national_currency_name, self.national_currency_symbol})"
+        return f"{self.name} ({self.national_currency_name}, {self.national_currency_symbol})"
