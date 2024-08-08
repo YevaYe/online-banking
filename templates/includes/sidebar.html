@@ -9,13 +9,16 @@
             {% endif %}
         </li>
         <li class="nav-item">
-            <a class="nav-link" href="{% url 'index' %}">My balance</a>
+            <a class="nav-link" href="{% url 'index' %}">Home</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" href="{% url 'my-balance' %}">My balance</a>
         </li>
         <li class="nav-item">
             <a class="nav-link" href="{% url 'transactions' %}">Transactions</a>
         </li>
         <li class="nav-item">
-            <a class="nav-link" href="{% url 'money_transfer' %}">Money Transfer</a>
+            <a class="nav-link" href="{% url 'money-transfer' %}">Money Transfer</a>
         </li>
         <li class="nav-item">
             <a class="nav-link" href="{% url 'statistics' %}">Statistics</a>
