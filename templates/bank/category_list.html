@@ -6,24 +6,13 @@
     Categories List
   </h1>
   {% if category_list %}
-    <table class="table">
-      <tr>
-        <th>Name</th>
-        <th>Type of category</th>
-      </tr>
-
+    <ul>
       {% for category in category_list %}
-        <tr>
-          <td>
-            {{ category.name }}
-          </td>
-          <td>
-            {{ category.type_of_category }}
-          </td>
-        </tr>
+        <li>
+          <a>{{ category.name }}</a>
+        </li>
       {% endfor %}
-    </table>
-
+    </ul>
   {% else %}
     <p>There are no categories.</p>
   {% endif %}

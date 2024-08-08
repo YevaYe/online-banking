@@ -1,0 +1,60 @@
+{% extends "base.html" %}
+{% load crispy_forms_filters %}
+
+{% block content %}
+  <h1>
+    Transaction List
+  </h1>
+  <form method="get" action="" class="form-inline">
+    {{ search_form|crispy }}
+    <input type="submit" value="Search" class="btn btn-secondary">
+  </form>
+
+  {% if transaction_list %}
+    <table class="table">
+      <tr>
+        <th>ID</th>
+        <th>Amount</th>
+        <th>Date</th>
+        <th>Category</th>
+        <th>Account From</th>
+        <th>Account From Owner</th>
+        <th>Account To</th>
+        <th>Account To Owner</th>
+      </tr>
+
+      {% for transaction in transaction_list %}
+        <tr>
+          <td>
+              {{ transaction.id }}
+          </td>
+          <td>
+              {{ transaction.amount }}
+          </td>
+          <td>
+              {{ transaction.date }}
+          </td>
+          <td>
+              {{ transaction.category }}
+          </td>
+          <td>
+              {{ transaction.account_from }}
+          </td>
+          <td>
+              {{ transaction.account_from.user.first_name }} {{ transaction.account_from.user.last_name }}
+          </td>
+          <td>
+              {{ transaction.account_to }}
+          </td>
+          <td>
+              {{ transaction.account_to.user.first_name }} {{ transaction.account_to.user.last_name }}
+          </td>
+          
+        </tr>
+      {% endfor %}
+    </table>
+
+  {% else %}
+      <p>You don't have transactions.</p>
+  {% endif %}
+{% endblock %}

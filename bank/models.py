@@ -67,7 +67,7 @@ class Transaction(models.Model):
             raise ValidationError("Amount must be greater than zero")
 
     class Meta:
-        ordering = ["-date"]
+        ordering = ["-id"]
 
 
 class Account(models.Model):
@@ -77,6 +77,8 @@ class Account(models.Model):
             MinValueValidator(1111_1111_1111_1111),
             MaxValueValidator(9999_9999_9999_9999),
         ],
+        blank=True,
+        null=True,
     )
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="accounts")
     balance = models.DecimalField(
@@ -110,7 +112,7 @@ class Category(models.Model):
     type_of_category = models.CharField(max_length=15, choices=CATEGORY_TYPE_CHOICES)
 
     def __str__(self):
-        return f"{self.name} (type: {self.type_of_category})"
+        return f"{self.name}"
 
 
 class Country(models.Model):

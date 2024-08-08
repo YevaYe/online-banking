@@ -88,6 +88,11 @@ class AccountCreateView(LoginRequiredMixin, generic.CreateView):
     template_name = "bank/account_form.html"
     success_url = reverse_lazy("bank:my-balance")
 
+    def get_form_kwargs(self):
+        kwargs = super().get_form_kwargs()
+        kwargs["user"] = self.request.user
+        return kwargs
+
 
 # class AccountUpdateView(LoginRequiredMixin, generic.UpdateView):
 #     model = Account
@@ -189,18 +194,18 @@ class MoneyTransferView(LoginRequiredMixin, View):
     success_url = reverse_lazy("bank:transaction-list")
 
     def get(self, request, *args, **kwargs):
-        form = self.form_class()
+        form = self.form_class(user=request.user)
         return render(request, self.template_name, {"form": form})
 
     def post(self, request, *args, **kwargs):
-        form = self.form_class(request.POST)
+        form = self.form_class(request.POST, user=request.user)
         if form.is_valid():
+            sender_account = form.cleaned_data["sender_account"]
             recipient_account_number = form.cleaned_data["recipient_account_number"]
             amount = form.cleaned_data["amount"]
 
             try:
                 with transaction.atomic():
-                    sender_account = request.user.accounts.first()
                     recipient_account = Account.objects.get(
                         number=recipient_account_number
                     )
