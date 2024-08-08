@@ -13,7 +13,7 @@ def generate_unique_account_number():
             return number
 
 
-class Client(AbstractUser):
+class User(AbstractUser):
     USER_TYPE_CHOICES = (
         ("regular", "Regular User"),
         ("entrepreneur", "Entrepreneur"),
@@ -23,7 +23,9 @@ class Client(AbstractUser):
     date_of_joining = models.DateField(auto_now_add=True)  # під час створення юзера
     country = models.ForeignKey("Country", on_delete=models.SET_NULL, null=True)
     # функція вибрати із запропонованого поки вводиш дані
-    user_type = models.CharField(max_length=12, choices=USER_TYPE_CHOICES, default="regular")
+    user_type = models.CharField(
+        max_length=12, choices=USER_TYPE_CHOICES, default="regular"
+    )
     # service_category = models.ForeignKey("Category", on_delete=models.SET_NULL, blank=True, null=True)
 
     groups = models.ManyToManyField(
@@ -71,12 +73,19 @@ class Transaction(models.Model):
 class Account(models.Model):
     number = models.IntegerField(
         unique=True,
-        validators=[MinValueValidator(1111_1111_1111_1111), MaxValueValidator(9999_9999_9999_9999)]
+        validators=[
+            MinValueValidator(1111_1111_1111_1111),
+            MaxValueValidator(9999_9999_9999_9999),
+        ],
     )
-    user = models.OneToOneField(Client, on_delete=models.CASCADE, related_name="account")
-    balance = models.DecimalField(max_digits=10, decimal_places=2, validators=[MinValueValidator(0)])
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="accounts")
+    balance = models.DecimalField(
+        max_digits=10, decimal_places=2, validators=[MinValueValidator(0)]
+    )
     created_at = models.DateTimeField(auto_now_add=True)
-    account_category = models.ForeignKey("Category", on_delete=models.SET_NULL, null=True, blank=True)
+    account_category = models.ForeignKey(
+        "Category", on_delete=models.SET_NULL, null=True, blank=True
+    )
 
     def save(self, *args, **kwargs):
         if not self.number:

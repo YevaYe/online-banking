@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+{% load crispy_forms_filters %}
+
+{% block content %}
+  <h1>
+    Categories List
+  </h1>
+  {% if category_list %}
+    <table class="table">
+      <tr>
+        <th>Name</th>
+        <th>Type of category</th>
+      </tr>
+
+      {% for category in category_list %}
+        <tr>
+          <td>
+            {{ category.name }}
+          </td>
+          <td>
+            {{ category.type_of_category }}
+          </td>
+        </tr>
+      {% endfor %}
+    </table>
+
+  {% else %}
+    <p>There are no categories.</p>
+  {% endif %}
+{% endblock %}

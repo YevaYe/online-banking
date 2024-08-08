@@ -1,21 +1,29 @@
-import requests
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import UserPassesTestMixin, LoginRequiredMixin
-from django.shortcuts import render
+from django.core.exceptions import ValidationError
+from django.db import transaction
+from django.shortcuts import render, redirect
+from django.db.models import Q
 from django.urls import reverse_lazy
-from django.views import generic
+from django.views import generic, View
 from django.views.generic import TemplateView
 
-from bank.forms import CountryForm, CategoryForm, AccountForm
-from bank.models import Account, Category, Country, Transaction, Client
+from bank.forms import (
+    CountryForm,
+    CategoryForm,
+    AccountForm,
+    TransactionSearchForm,
+    MoneyTransferForm,
+)
+from bank.models import Account, Category, Country, Transaction, User
 
 
 @login_required
 def index(request):
     """View function for the home page of the site."""
 
-    num_general_users = Client.objects.filter(user_type="regular").count()
-    num_entrepreneurs = Client.objects.filter(user_type="entrepreneur").count()
+    num_general_users = User.objects.filter(user_type="regular").count()
+    num_entrepreneurs = User.objects.filter(user_type="entrepreneur").count()
     num_accounts = Account.objects.count()
     num_transactions = Transaction.objects.count()
     num_categories = Category.objects.count()
@@ -97,8 +105,8 @@ class AccountDeleteView(LoginRequiredMixin, generic.DeleteView):
 class CategoryListView(LoginRequiredMixin, generic.ListView):
     model = Category
     template_name = "bank/category_list.html"
-    context_object_name = "category-list"
-    pagination = 10
+    context_object_name = "category_list"
+    pagination = 5
 
 
 class CategoryCreateView(AdminRequiredMixin, generic.CreateView):
@@ -124,8 +132,8 @@ class CategoryDeleteView(AdminRequiredMixin, generic.DeleteView):
 class CountryListView(LoginRequiredMixin, generic.ListView):
     model = Country
     template_name = "bank/country_list.html"
-    context_object_name = "country-list"
-    paginate_by = 10
+    context_object_name = "country_list"
+    paginate_by = 5
 
 
 class CountryCreateView(AdminRequiredMixin, generic.CreateView):
@@ -150,6 +158,80 @@ class CountryDeleteView(AdminRequiredMixin, generic.DeleteView):
 
 class TransactionListView(LoginRequiredMixin, generic.ListView):
     model = Transaction
-    template_name = "bank/transaction-list.html"
-    context_object_name = "transaction-list"
+    template_name = "bank/transaction_list.html"
+    context_object_name = "transaction_list"
     paginate_by = 15
+
+    def get_context_data(self, *, object_list=None, **kwargs):
+        context = super(TransactionListView, self).get_context_data(**kwargs)
+        date = self.request.GET.get("date", "")
+
+        context["search_form"] = TransactionSearchForm(initial={"date": date})
+        return context
+
+    def get_queryset(self):
+        user = self.request.user
+        user_accounts = user.accounts.all()
+        queryset = Transaction.objects.filter(
+            Q(account_from__in=user_accounts) | Q(account_to__in=user_accounts)
+        )
+        form = TransactionSearchForm(self.request.GET)
+        if form.is_valid():
+            date = form.cleaned_data["date"]
+            if date:
+                queryset = queryset.filter(date=date)
+        return queryset
+
+
+class MoneyTransferView(LoginRequiredMixin, View):
+    form_class = MoneyTransferForm
+    template_name = "bank/money_transfer.html"
+    success_url = reverse_lazy("bank:transaction-list")
+
+    def get(self, request, *args, **kwargs):
+        form = self.form_class()
+        return render(request, self.template_name, {"form": form})
+
+    def post(self, request, *args, **kwargs):
+        form = self.form_class(request.POST)
+        if form.is_valid():
+            recipient_account_number = form.cleaned_data["recipient_account_number"]
+            amount = form.cleaned_data["amount"]
+
+            try:
+                with transaction.atomic():
+                    sender_account = request.user.accounts.first()
+                    recipient_account = Account.objects.get(
+                        number=recipient_account_number
+                    )
+
+                    if sender_account.balance < amount:
+                        raise ValidationError("Insufficient funds.")
+
+                    sender_account.balance -= amount
+                    sender_account.save()
+
+                    recipient_account.balance += amount
+                    recipient_account.save()
+
+                    category = (
+                        recipient_account.account_category
+                        or Category.objects.get_or_create(name="Transfer")[0]
+                    )
+
+                    Transaction.objects.create(
+                        account_from=sender_account,
+                        account_to=recipient_account,
+                        amount=amount,
+                        category=category,
+                    )
+
+                return redirect(self.success_url)
+            except ValidationError as e:
+                form.add_error(None, e.message)
+            except Account.DoesNotExist:
+                form.add_error(
+                    "recipient_account_number", "Recipient account does not exist."
+                )
+
+        return render(request, self.template_name, {"form": form})

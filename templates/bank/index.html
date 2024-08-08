@@ -2,6 +2,12 @@
 
 {% block content %}
     <h1>Online Banking Home</h1>
+    <a href="{% url 'bank:category-list' %}" class="btn btn-primary link-to-page">
+      All categories
+    </a>
+    <a href="{% url 'bank:country-list' %}" class="btn btn-primary link-to-page">
+      All countries
+    </a>
     <p>Welcome to Best Bank Ever!</p>
     <h2>Dynamic content</h2>
     <p>The Online Banking has the following record counts:</p>
