@@ -76,13 +76,15 @@ class Account(models.Model):
     user = models.OneToOneField(Client, on_delete=models.CASCADE, related_name="account")
     balance = models.DecimalField(max_digits=10, decimal_places=2, validators=[MinValueValidator(0)])
     created_at = models.DateTimeField(auto_now_add=True)
-    account_category = models.ForeignKey("Category", on_delete=models.SET_NULL, default="Transfer", null=True, blank=True)
+    account_category = models.ForeignKey("Category", on_delete=models.SET_NULL, null=True, blank=True)
 
     def save(self, *args, **kwargs):
         if not self.number:
             self.number = generate_unique_account_number()
         if self.user.user_type != "entrepreneur" and self.account_category is not None:
             raise ValidationError("Only entrepreneurs can have account categories.")
+        if self._state.adding and self.balance is None:
+            self.balance = 0
         super(Account, self).save(*args, **kwargs)
 
     def __str__(self):
