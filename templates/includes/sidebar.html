@@ -1,5 +1,5 @@
 <div class="sidebar">
-    <h2>{{ request.user.username }}</h2>
+    <h4>Welcome, {{ request.user.first_name }}!</h4>
     <ul class="nav flex-column">
         <li class="nav-item">
             {% if user.is_authenticated %}
@@ -12,16 +12,16 @@
             <a class="nav-link" href="{% url 'bank:index' %}">Home</a>
         </li>
         <li class="nav-item">
-            <a class="nav-link" href="{% url 'bank:account-list' %}">My balance</a>
+            <a class="nav-link" href="{% url 'bank:my-balance' %}">My balance</a>
         </li>
         <li class="nav-item">
-            <a class="nav-link" href="{% url 'bank:transactions' %}">Transactions</a>
+            <a class="nav-link" href="{% url 'bank:transaction-list' %}">Transactions</a>
         </li>
         <li class="nav-item">
             <a class="nav-link" href="{% url 'bank:money-transfer' %}">Money Transfer</a>
         </li>
-        <li class="nav-item">
-            <a class="nav-link" href="{% url 'bank:statistics' %}">Statistics</a>
-        </li>
+{#        <li class="nav-item">#}
+{#            <a class="nav-link" href="{% url 'bank:statistics' %}">Statistics</a>#}
+{#        </li>#}
     </ul>
 </div>
