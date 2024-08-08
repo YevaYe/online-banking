@@ -9,19 +9,19 @@
             {% endif %}
         </li>
         <li class="nav-item">
-            <a class="nav-link" href="{% url 'index' %}">Home</a>
+            <a class="nav-link" href="{% url 'bank:index' %}">Home</a>
         </li>
         <li class="nav-item">
-            <a class="nav-link" href="{% url 'my-balance' %}">My balance</a>
+            <a class="nav-link" href="{% url 'bank:account-list' %}">My balance</a>
         </li>
         <li class="nav-item">
-            <a class="nav-link" href="{% url 'transactions' %}">Transactions</a>
+            <a class="nav-link" href="{% url 'bank:transactions' %}">Transactions</a>
         </li>
         <li class="nav-item">
-            <a class="nav-link" href="{% url 'money-transfer' %}">Money Transfer</a>
+            <a class="nav-link" href="{% url 'bank:money-transfer' %}">Money Transfer</a>
         </li>
         <li class="nav-item">
-            <a class="nav-link" href="{% url 'statistics' %}">Statistics</a>
+            <a class="nav-link" href="{% url 'bank:statistics' %}">Statistics</a>
         </li>
     </ul>
 </div>
