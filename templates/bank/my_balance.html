@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+
+{% block title %}
+    My Balance
+{% endblock %}
+
+{% block content %}
+    <h1>My Balance</h1>
+    <p>Total Balance: ${{ total_balance }}</p>
+    
+    <h2>Accounts</h2>
+    <ul>
+        {% for account in accounts %}
+            <li>
+                <strong>Account Number:</strong> {{ account.number }}<br>
+                <strong>Balance:</strong> ${{ account.balance }}<br>
+                <strong>Category:</strong> {% if account.account_category %}
+              {{ account.account_category.name }}{% else %}No Category{% endif %}
+            </li>
+        {% endfor %}
+    </ul>
+{% endblock %}

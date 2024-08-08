@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <h1>Online Banking Home</h1>
+    <p>Welcome to Best Bank Ever!</p>
+    <h2>Dynamic content</h2>
+    <p>The Online Banking has the following record counts:</p>
+    <ul>
+        <li><strong>Regular users:</strong> {{ num_general_users }}</li>
+        <li><strong>Entrepreneurs:</strong> {{ num_entrepreneurs }}</li>
+        <li><strong>Accounts:</strong> {{ num_accounts }}</li>
+        <li><strong>Transactions:</strong> {{ num_transactions }}</li>
+        <li><strong>Categories:</strong> {{ num_categories }}</li>
+        <li><strong>Countries:</strong> {{ num_countries}}</li>
+    </ul>
+
+    <p>You have visited this page
+        {{ num_visits }} time{{ num_visits|pluralize }}.
+    </p>
+
+{% endblock %}
