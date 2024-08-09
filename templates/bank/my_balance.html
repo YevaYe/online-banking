@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+
+
+{% block content %}
+    <h1>My Balance</h1>
+    <p>Total Balance: ${{ total_balance }}</p>
+  
+    <a href="{% url 'bank:account-create' %}" class="btn btn-primary link-to-page">
+      Create
+    </a>
+  
+    <h2>Accounts</h2>
+    
+    <ul>
+        {% for account in accounts %}
+            <li>
+    <a style="color: red" href="{% url 'bank:account-delete' pk=account.id %}" class="btn link-to-page">
+      Delete
+    </a>        
+                <strong>Account Number:</strong> {{ account.number }}<br>
+                <strong>Balance:</strong> ${{ account.balance }}<br>
+                <strong>Category:</strong> {% if account.account_category %}
+              {{ account.account_category.name }}{% else %}No Category{% endif %}
+                
+            </li>
+        {% endfor %}
+    </ul>
+{% endblock %}

@@ -1,0 +1,34 @@
+{% extends "base.html" %}
+{% load crispy_forms_filters %}
+
+{% block content %}
+  <h1>
+    Country List
+  </h1>
+  {% if country_list %}
+    <table class="table">
+      <tr>
+        <th>Name</th>
+        <th>Type of name</th>
+        <th>National currency symbol</th>
+      </tr>
+
+      {% for country in country_list %}
+        <tr>
+          <td>
+            {{ country.name }}
+          </td>
+          <td>
+            {{ country.national_currency_name }}
+          </td>
+          <td>
+            {{ country.national_currency_symbol }}
+          </td>
+        </tr>
+      {% endfor %}
+    </table>
+
+  {% else %}
+    <p>There are no countries.</p>
+  {% endif %}
+{% endblock %}

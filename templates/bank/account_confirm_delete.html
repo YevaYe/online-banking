@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+
+{% block content %}
+  <h1>Delete Account</h1>
+
+  <p>Are you sure you want to delete this account? This action cannot be undone. The following data will be permanently deleted:</p>
+  <ul>
+    <li>Account Number: {{ object.number }}</li>
+    <li>Account Balance: {{ object.balance }}</li>
+    <li>All transactions associated with this account</li>
+  </ul>
+
+  <form method="post">
+    {% csrf_token %}
+    <button type="submit" class="btn btn-danger">Confirm Delete</button>
+    <a href="{% url 'bank:my-balance' %}" class="btn btn-secondary">Cancel</a>
+  </form>
+{% endblock %}
